@@ -4,7 +4,6 @@ namespace Jinom\Helpers;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Jinom\Helpers\Commands\HelpersCommand;
 
 class HelpersServiceProvider extends PackageServiceProvider
 {

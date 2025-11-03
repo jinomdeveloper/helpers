@@ -4,47 +4,47 @@ namespace Jinom\Helpers\Traits;
 
 /**
  * HasCurrency Trait - Provides currency formatting methods.
- * 
+ *
  * This trait provides methods for formatting numbers into Indonesian Rupiah (IDR)
  * currency format following Indonesian number formatting conventions.
- * 
- * @package Jinom\Helpers\Traits
+ *
  * @author Rupadana <rupadanawayan@gmail.com>
+ *
  * @version 1.0.0
  */
 trait HasCurrency
 {
     /**
      * Format amount to Indonesian Rupiah currency format.
-     * 
+     *
      * Converts a numeric value to Indonesian Rupiah format with proper
      * thousand separators using dots (.) as per Indonesian convention.
      * The amount is rounded to the nearest integer as IDR doesn't use decimals.
      *
-     * @param float|int $amount The amount to format
+     * @param  float|int  $amount  The amount to format
      * @return string Formatted currency string with "Rp " prefix
-     * 
+     *
      * @example
      * rupiah(1000000);    // Returns "Rp 1.000.000"
-     * rupiah(150000);     // Returns "Rp 150.000"  
+     * rupiah(150000);     // Returns "Rp 150.000"
      * rupiah(1500.75);    // Returns "Rp 1.501" (rounded)
      * rupiah(0);          // Returns "Rp 0"
      * rupiah(-50000);     // Returns "Rp -50.000"
      */
     public static function rupiah($amount)
     {
-        return 'Rp ' . number_format($amount, 0, ',', '.');
+        return 'Rp '.number_format($amount, 0, ',', '.');
     }
 
     /**
      * Convert number to Indonesian words (terbilang).
-     * 
+     *
      * Converts numeric values to their Indonesian text representation,
      * commonly used for checks, invoices, and official documents.
-     * 
-     * @param float|int $amount The number to convert to words
+     *
+     * @param  float|int  $amount  The number to convert to words
      * @return string Indonesian text representation with "rupiah" suffix
-     * 
+     *
      * @example
      * terbilang(1000000);     // Returns "Satu Juta Rupiah"
      * terbilang(150000);      // Returns "Seratus Lima Puluh Ribu Rupiah"
@@ -53,18 +53,18 @@ trait HasCurrency
      */
     public static function terbilang($amount)
     {
-        return trim(trim(self::_terbilang($amount)) . ' Rupiah');
+        return trim(trim(self::_terbilang($amount)).' Rupiah');
     }
 
     /**
      * Internal recursive method for number to words conversion.
-     * 
-     * @param float|int $amount The number to convert
+     *
+     * @param  float|int  $amount  The number to convert
      * @return string Text representation without "rupiah" suffix
      */
     private static function _terbilang($amount)
     {
-        $angka = array(
+        $angka = [
             '',
             'Satu',
             'Dua',
@@ -76,63 +76,69 @@ trait HasCurrency
             'Delapan',
             'Sembilan',
             'Sepuluh',
-            'Sebelas'
-        );
+            'Sebelas',
+        ];
 
         if ($amount < 12) {
             return $angka[$amount];
         } elseif ($amount < 20) {
-            return self::_terbilang($amount - 10) . ' Belas';
+            return self::_terbilang($amount - 10).' Belas';
         } elseif ($amount < 100) {
             $puluh = self::_terbilang(intval($amount / 10));
             $satuan = self::_terbilang($amount % 10);
-            $result = $puluh . ' Puluh';
-            if (!empty($satuan)) {
-                $result .= ' ' . $satuan;
+            $result = $puluh.' Puluh';
+            if (! empty($satuan)) {
+                $result .= ' '.$satuan;
             }
+
             return trim($result);
         } elseif ($amount < 200) {
             $sisa = self::_terbilang($amount - 100);
             $result = 'Seratus';
-            if (!empty($sisa)) {
-                $result .= ' ' . $sisa;
+            if (! empty($sisa)) {
+                $result .= ' '.$sisa;
             }
+
             return trim($result);
         } elseif ($amount < 1000) {
             $ratus = self::_terbilang(intval($amount / 100));
             $sisa = self::_terbilang($amount % 100);
-            $result = $ratus . ' Ratus';
-            if (!empty($sisa)) {
-                $result .= ' ' . $sisa;
+            $result = $ratus.' Ratus';
+            if (! empty($sisa)) {
+                $result .= ' '.$sisa;
             }
+
             return trim($result);
         } elseif ($amount < 2000) {
             $sisa = self::_terbilang($amount - 1000);
             $result = 'Seribu';
-            if (!empty($sisa)) {
-                $result .= ' ' . $sisa;
+            if (! empty($sisa)) {
+                $result .= ' '.$sisa;
             }
+
             return trim($result);
         } elseif ($amount < 1000000) {
             $ribu = self::_terbilang(intval($amount / 1000));
             $sisa = self::_terbilang($amount % 1000);
-            $result = $ribu . ' Ribu';
-            if (!empty($sisa)) {
-                $result .= ' ' . $sisa;
+            $result = $ribu.' Ribu';
+            if (! empty($sisa)) {
+                $result .= ' '.$sisa;
             }
+
             return trim($result);
         } elseif ($amount < 1000000000) {
             $juta = self::_terbilang(intval($amount / 1000000));
             $sisa = self::_terbilang($amount % 1000000);
-            $result = $juta . ' Juta';
-            if (!empty($sisa)) {
-                $result .= ' ' . $sisa;
+            $result = $juta.' Juta';
+            if (! empty($sisa)) {
+                $result .= ' '.$sisa;
             }
+
             return trim($result);
         } elseif ($amount < 1000000000000) {
-            return self::_terbilang($amount / 1000000000) . ' Miliar' . self::_terbilang(fmod($amount, 1000000000));
+            return self::_terbilang($amount / 1000000000).' Miliar'.self::_terbilang(fmod($amount, 1000000000));
         } elseif ($amount < 1000000000000000) {
-            return self::_terbilang($amount / 1000000000000) . ' Triliun' . self::_terbilang(fmod($amount, 1000000000000));
+            return self::_terbilang($amount / 1000000000000).' Triliun'.self::_terbilang(fmod($amount, 1000000000000));
         }
 
         return '';
@@ -140,14 +146,14 @@ trait HasCurrency
 
     /**
      * Parse Indonesian currency strings back to numbers.
-     * 
-     * Converts Indonesian formatted currency strings (with "Rp", dots as thousand 
+     *
+     * Converts Indonesian formatted currency strings (with "Rp", dots as thousand
      * separators, commas as decimal separators) back to numeric values. Handles
      * negative amounts in parentheses or with minus signs.
-     * 
-     * @param string|int|float $value Currency string, number, or numeric value to parse
+     *
+     * @param  string|int|float  $value  Currency string, number, or numeric value to parse
      * @return int|float Numeric value (int if no decimals, float if decimals present)
-     * 
+     *
      * @example
      * rupiah_to_number("Rp 1.000.000");      // Returns 1000000
      * rupiah_to_number("Rp 1.500,75");       // Returns 1500.75
@@ -193,7 +199,7 @@ trait HasCurrency
         $s = str_replace(',', '.', $s);
 
         // Jika masih kosong atau bukan angka, kembalikan 0
-        if ($s === '' || !is_numeric($s)) {
+        if ($s === '' || ! is_numeric($s)) {
             return 0;
         }
 

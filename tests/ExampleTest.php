@@ -1,13 +1,13 @@
 <?php
 
+use Jinom\Helpers\Facades\Helpers as HelpersFacade;
 use Jinom\Helpers\Helpers;
 use Jinom\Helpers\Services\TaxService;
-use Jinom\Helpers\Facades\Helpers as HelpersFacade;
 
 describe('Tax Calculations', function () {
     it('can calculate tax from inclusive price', function () {
         $taxService = Helpers::tax(111000, true);
-        
+
         expect($taxService)->toBeInstanceOf(TaxService::class);
         expect($taxService->basePrice)->toBe(100000.0);
         expect($taxService->tax)->toBe(11000.0);
@@ -16,7 +16,7 @@ describe('Tax Calculations', function () {
 
     it('can calculate tax from exclusive price', function () {
         $taxService = Helpers::tax(100000, false);
-        
+
         expect($taxService)->toBeInstanceOf(TaxService::class);
         expect($taxService->basePrice)->toBe(100000.0);
         expect($taxService->tax)->toBe(11000.0);
@@ -25,7 +25,7 @@ describe('Tax Calculations', function () {
 
     it('can handle decimal amounts correctly', function () {
         $taxService = Helpers::tax(100500.50, false);
-        
+
         expect($taxService->basePrice)->toBe(100500.5);
         expect($taxService->tax)->toBe(11055.0); // rounded
         expect($taxService->taxedPrice)->toBe(111555.5);
@@ -116,42 +116,42 @@ describe('Integration Tests', function () {
         // Product price displayed to customer (includes tax)
         $displayPrice = 555000;
         $tax = Helpers::tax($displayPrice, true);
-        
+
         expect($tax->basePrice)->toBe(500000.0);
         expect($tax->tax)->toBe(55000.0);
         expect($tax->taxedPrice)->toBe(555000.0);
-        
+
         // Format for display
         $formattedBasePrice = Helpers::rupiah($tax->basePrice);
         $formattedTax = Helpers::rupiah($tax->tax);
         $formattedTotal = Helpers::rupiah($tax->taxedPrice);
         $amountInWords = Helpers::terbilang($tax->taxedPrice);
-        
+
         expect($formattedBasePrice)->toBe('Rp 500.000');
         expect($formattedTax)->toBe('Rp 55.000');
         expect($formattedTotal)->toBe('Rp 555.000');
         expect($amountInWords)->toBe('Lima Ratus Lima Puluh Lima Ribu Rupiah');
     });
-    
+
     it('can process invoice scenario', function () {
         $items = [
             ['name' => 'Product A', 'price' => 100000],
             ['name' => 'Product B', 'price' => 250000],
         ];
-        
+
         $subtotal = 0;
         $totalTax = 0;
-        
+
         foreach ($items as $item) {
             $tax = Helpers::tax($item['price'], false);
             $subtotal += $tax->basePrice;
             $totalTax += $tax->tax;
         }
-        
+
         expect($subtotal)->toBe(350000.0);
         expect($totalTax)->toBe(38500.0);
         expect($subtotal + $totalTax)->toBe(388500.0);
-        
+
         // Format amounts
         expect(Helpers::rupiah($subtotal))->toBe('Rp 350.000');
         expect(Helpers::rupiah($totalTax))->toBe('Rp 38.500');
@@ -162,19 +162,19 @@ describe('Integration Tests', function () {
         // Simulate customer form input
         $customerInput = [
             'amount' => 'Rp 1.500.000',
-            'phone' => '0812-3456-7890'
+            'phone' => '0812-3456-7890',
         ];
-        
+
         // Parse and process
         $amount = Helpers::rupiah_to_number($customerInput['amount']);
         $phone = Helpers::to_e164($customerInput['phone']);
-        
+
         expect($amount)->toBe(1500000);
         expect($phone)->toBe('+6281234567890');
-        
+
         // Calculate with tax
         $tax = Helpers::tax($amount, false);
-        
+
         expect($tax->taxedPrice)->toBe(1665000.0);
         expect(Helpers::rupiah($tax->taxedPrice))->toBe('Rp 1.665.000');
         expect(Helpers::terbilang($tax->taxedPrice))->toBe('Satu Juta Enam Ratus Enam Puluh Lima Ribu Rupiah');
