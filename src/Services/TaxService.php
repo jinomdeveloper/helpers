@@ -58,7 +58,7 @@ class TaxService
      *
      * @throws \InvalidArgumentException If total is negative
      */
-    public function __construct(float | int $total, $includedTax = true)
+    public function __construct(float|int $total, $includedTax = true)
     {
         if ($includedTax) {
             $this->taxedPrice = (float) $total;
