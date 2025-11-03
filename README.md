@@ -299,7 +299,7 @@ The package handles common edge cases:
 
 ## Compatibility
 
-- **PHP**: 8.4+
+- **PHP**: 8.3+
 - **Laravel**: 10.x, 11.x, 12.x
 - **Framework**: Laravel package, but core classes can work standalone
 
