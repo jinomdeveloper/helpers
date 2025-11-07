@@ -57,6 +57,27 @@ trait HasCurrency
     }
 
     /**
+     * Lookup array for basic number words (0-11).
+     * Defined as a static property to avoid recreating it on every recursive call.
+     *
+     * @var array<int, string>
+     */
+    private static $angka = [
+        '',
+        'Satu',
+        'Dua',
+        'Tiga',
+        'Empat',
+        'Lima',
+        'Enam',
+        'Tujuh',
+        'Delapan',
+        'Sembilan',
+        'Sepuluh',
+        'Sebelas',
+    ];
+
+    /**
      * Internal recursive method for number to words conversion.
      *
      * @param  float|int  $amount  The number to convert
@@ -64,81 +85,72 @@ trait HasCurrency
      */
     private static function _terbilang($amount)
     {
-        $angka = [
-            '',
-            'Satu',
-            'Dua',
-            'Tiga',
-            'Empat',
-            'Lima',
-            'Enam',
-            'Tujuh',
-            'Delapan',
-            'Sembilan',
-            'Sepuluh',
-            'Sebelas',
-        ];
-
         if ($amount < 12) {
-            return $angka[$amount];
-        } elseif ($amount < 20) {
+            return self::$angka[$amount];
+        }
+
+        if ($amount < 20) {
             return self::_terbilang($amount - 10).' Belas';
-        } elseif ($amount < 100) {
-            $puluh = self::_terbilang(intval($amount / 10));
-            $satuan = self::_terbilang($amount % 10);
-            $result = $puluh.' Puluh';
-            if (! empty($satuan)) {
-                $result .= ' '.$satuan;
-            }
+        }
 
-            return trim($result);
-        } elseif ($amount < 200) {
-            $sisa = self::_terbilang($amount - 100);
-            $result = 'Seratus';
-            if (! empty($sisa)) {
-                $result .= ' '.$sisa;
-            }
+        if ($amount < 100) {
+            $remainder = $amount % 10;
 
-            return trim($result);
-        } elseif ($amount < 1000) {
-            $ratus = self::_terbilang(intval($amount / 100));
-            $sisa = self::_terbilang($amount % 100);
-            $result = $ratus.' Ratus';
-            if (! empty($sisa)) {
-                $result .= ' '.$sisa;
-            }
+            return $remainder === 0
+                ? self::_terbilang(intval($amount / 10)).' Puluh'
+                : self::_terbilang(intval($amount / 10)).' Puluh '.self::_terbilang($remainder);
+        }
 
-            return trim($result);
-        } elseif ($amount < 2000) {
-            $sisa = self::_terbilang($amount - 1000);
-            $result = 'Seribu';
-            if (! empty($sisa)) {
-                $result .= ' '.$sisa;
-            }
+        if ($amount < 200) {
+            $remainder = $amount - 100;
 
-            return trim($result);
-        } elseif ($amount < 1000000) {
-            $ribu = self::_terbilang(intval($amount / 1000));
-            $sisa = self::_terbilang($amount % 1000);
-            $result = $ribu.' Ribu';
-            if (! empty($sisa)) {
-                $result .= ' '.$sisa;
-            }
+            return $remainder === 0 ? 'Seratus' : 'Seratus '.self::_terbilang($remainder);
+        }
 
-            return trim($result);
-        } elseif ($amount < 1000000000) {
-            $juta = self::_terbilang(intval($amount / 1000000));
-            $sisa = self::_terbilang($amount % 1000000);
-            $result = $juta.' Juta';
-            if (! empty($sisa)) {
-                $result .= ' '.$sisa;
-            }
+        if ($amount < 1000) {
+            $remainder = $amount % 100;
 
-            return trim($result);
-        } elseif ($amount < 1000000000000) {
-            return self::_terbilang($amount / 1000000000).' Miliar'.self::_terbilang(fmod($amount, 1000000000));
-        } elseif ($amount < 1000000000000000) {
-            return self::_terbilang($amount / 1000000000000).' Triliun'.self::_terbilang(fmod($amount, 1000000000000));
+            return $remainder === 0
+                ? self::_terbilang(intval($amount / 100)).' Ratus'
+                : self::_terbilang(intval($amount / 100)).' Ratus '.self::_terbilang($remainder);
+        }
+
+        if ($amount < 2000) {
+            $remainder = $amount - 1000;
+
+            return $remainder === 0 ? 'Seribu' : 'Seribu '.self::_terbilang($remainder);
+        }
+
+        if ($amount < 1000000) {
+            $remainder = $amount % 1000;
+
+            return $remainder === 0
+                ? self::_terbilang(intval($amount / 1000)).' Ribu'
+                : self::_terbilang(intval($amount / 1000)).' Ribu '.self::_terbilang($remainder);
+        }
+
+        if ($amount < 1000000000) {
+            $remainder = $amount % 1000000;
+
+            return $remainder === 0
+                ? self::_terbilang(intval($amount / 1000000)).' Juta'
+                : self::_terbilang(intval($amount / 1000000)).' Juta '.self::_terbilang($remainder);
+        }
+
+        if ($amount < 1000000000000) {
+            $remainder = fmod($amount, 1000000000);
+
+            return $remainder === 0.0
+                ? self::_terbilang($amount / 1000000000).' Miliar'
+                : self::_terbilang($amount / 1000000000).' Miliar '.self::_terbilang($remainder);
+        }
+
+        if ($amount < 1000000000000000) {
+            $remainder = fmod($amount, 1000000000000);
+
+            return $remainder === 0.0
+                ? self::_terbilang($amount / 1000000000000).' Triliun'
+                : self::_terbilang($amount / 1000000000000).' Triliun '.self::_terbilang($remainder);
         }
 
         return '';
@@ -164,7 +176,7 @@ trait HasCurrency
      */
     public static function rupiah_to_number($value)
     {
-        // Jika sudah numerik, kembalikan langsung (cast ke int/float)
+        // If already numeric, return as is
         if (is_int($value) || is_float($value)) {
             return $value;
         }
@@ -174,37 +186,28 @@ trait HasCurrency
             return 0;
         }
 
-        // Deteksi negatif: tanda minus atau tanda kurung
-        $negative = false;
-        if (strpos($s, '(') !== false && strpos($s, ')') !== false) {
-            $negative = true;
-            $s = preg_replace('/[()]/', '', $s);
-        }
-        if (strpos($s, '-') !== false) {
-            $negative = true;
-            $s = str_replace('-', '', $s);
-        }
+        // Detect negative: minus sign or parentheses, and clean in one pass
+        $negative = str_contains($s, '-') || (str_contains($s, '(') && str_contains($s, ')'));
 
-        // Hapus simbol "Rp" (besar/kecil), spasi, dan karakter bukan numerik kecuali '.' dan ','
-        $s = preg_replace('/[Rr][Pp]\.?/u', '', $s);
-        $s = preg_replace('/[^\d\.,]/u', '', $s);
+        // Remove all non-numeric characters except dots and commas in a single regex
+        // This handles Rp, spaces, parentheses, minus signs, etc.
+        $s = preg_replace('/[^\d\.,]/', '', $s);
 
         if ($s === '') {
             return 0;
         }
 
-        // Asumsi format Indonesia: titik sebagai pemisah ribuan, koma sebagai desimal
-        // Hapus titik ribuan, ubah koma menjadi titik desimal
-        $s = str_replace('.', '', $s);
-        $s = str_replace(',', '.', $s);
+        // Indonesian format: dot as thousands separator, comma as decimal
+        // Remove thousand separators, convert comma to decimal point
+        $s = str_replace(['.', ','], ['', '.'], $s);
 
-        // Jika masih kosong atau bukan angka, kembalikan 0
+        // Early return for invalid or empty string
         if ($s === '' || ! is_numeric($s)) {
             return 0;
         }
 
-        // Kembalikan int jika tidak ada bagian desimal, sebaliknya float
-        $num = (strpos($s, '.') !== false) ? (float) $s : (int) $s;
+        // Return int if no decimal part, otherwise float
+        $num = str_contains($s, '.') ? (float) $s : (int) $s;
 
         return $negative ? -$num : $num;
     }

@@ -40,34 +40,33 @@ trait HasPhoneNumber
             return '';
         }
 
-        // Hapus semua karakter non-numerik kecuali tanda +
+        // Remove all non-numeric characters except + in a single pass
         $cleaned = preg_replace('/[^\d+]/', '', (string) $phone);
 
-        if (empty($cleaned)) {
+        if ($cleaned === '') {
             return '';
         }
 
-        // Jika sudah dimulai dengan +, kembalikan langsung
-        if (strpos($cleaned, '+') === 0) {
+        // If already starts with +, return as is
+        if ($cleaned[0] === '+') {
             return $cleaned;
         }
 
-        // Hapus tanda + jika ada di tengah
+        // Remove any + in the middle
         $cleaned = str_replace('+', '', $cleaned);
 
-        // Jika dimulai dengan 0, ganti dengan kode negara
-        if (strpos($cleaned, '0') === 0) {
-            $cleaned = $countryCode.substr($cleaned, 1);
-        }
-        // Jika dimulai dengan kode negara tanpa +, tambahkan +
-        elseif (strpos($cleaned, $countryCode) === 0) {
-            // Sudah benar, tinggal tambah +
-        }
-        // Jika tidak dimulai dengan 0 atau kode negara, anggap nomor lokal
-        else {
-            $cleaned = $countryCode.$cleaned;
+        // Handle different formats efficiently
+        if ($cleaned[0] === '0') {
+            // Local number starting with 0: replace with country code
+            return '+'.$countryCode.substr($cleaned, 1);
         }
 
-        return '+'.$cleaned;
+        // Check if it already starts with country code
+        if (str_starts_with($cleaned, $countryCode)) {
+            return '+'.$cleaned;
+        }
+
+        // Assume local number without 0 prefix
+        return '+'.$countryCode.$cleaned;
     }
 }
