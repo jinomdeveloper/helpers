@@ -43,12 +43,12 @@ trait HasPhoneNumber
         // Remove all non-numeric characters except + in a single pass
         $cleaned = preg_replace('/[^\d+]/', '', (string) $phone);
 
-        if ($cleaned === '') {
+        if ($cleaned === '' || $cleaned === false) {
             return '';
         }
 
         // If already starts with +, return as is
-        if ($cleaned[0] === '+') {
+        if (str_starts_with($cleaned, '+')) {
             return $cleaned;
         }
 
@@ -56,7 +56,7 @@ trait HasPhoneNumber
         $cleaned = str_replace('+', '', $cleaned);
 
         // Handle different formats efficiently
-        if ($cleaned[0] === '0') {
+        if (str_starts_with($cleaned, '0')) {
             // Local number starting with 0: replace with country code
             return '+'.$countryCode.substr($cleaned, 1);
         }

@@ -49,7 +49,7 @@ class TaxService
      * @param  float|int  $total  The total amount to calculate tax for
      * @param  bool  $includedTax  Whether the total already includes tax
      */
-    public function __construct(float|int $total, $includedTax = true)
+    public function __construct(float|int $total, bool $includedTax = true)
     {
         if ($includedTax) {
             $this->taxedPrice = (float) $total;
