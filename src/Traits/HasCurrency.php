@@ -95,10 +95,11 @@ trait HasCurrency
 
         if ($amount < 100) {
             $remainder = $amount % 10;
+            $tens = intval($amount / 10);
 
             return $remainder === 0
-                ? self::_terbilang(intval($amount / 10)).' Puluh'
-                : self::_terbilang(intval($amount / 10)).' Puluh '.self::_terbilang($remainder);
+                ? self::_terbilang($tens).' Puluh'
+                : self::_terbilang($tens).' Puluh '.self::_terbilang($remainder);
         }
 
         if ($amount < 200) {
@@ -109,10 +110,11 @@ trait HasCurrency
 
         if ($amount < 1000) {
             $remainder = $amount % 100;
+            $hundreds = intval($amount / 100);
 
             return $remainder === 0
-                ? self::_terbilang(intval($amount / 100)).' Ratus'
-                : self::_terbilang(intval($amount / 100)).' Ratus '.self::_terbilang($remainder);
+                ? self::_terbilang($hundreds).' Ratus'
+                : self::_terbilang($hundreds).' Ratus '.self::_terbilang($remainder);
         }
 
         if ($amount < 2000) {
@@ -123,18 +125,20 @@ trait HasCurrency
 
         if ($amount < 1000000) {
             $remainder = $amount % 1000;
+            $thousands = intval($amount / 1000);
 
             return $remainder === 0
-                ? self::_terbilang(intval($amount / 1000)).' Ribu'
-                : self::_terbilang(intval($amount / 1000)).' Ribu '.self::_terbilang($remainder);
+                ? self::_terbilang($thousands).' Ribu'
+                : self::_terbilang($thousands).' Ribu '.self::_terbilang($remainder);
         }
 
         if ($amount < 1000000000) {
             $remainder = $amount % 1000000;
+            $millions = intval($amount / 1000000);
 
             return $remainder === 0
-                ? self::_terbilang(intval($amount / 1000000)).' Juta'
-                : self::_terbilang(intval($amount / 1000000)).' Juta '.self::_terbilang($remainder);
+                ? self::_terbilang($millions).' Juta'
+                : self::_terbilang($millions).' Juta '.self::_terbilang($remainder);
         }
 
         if ($amount < 1000000000000) {

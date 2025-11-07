@@ -43,7 +43,7 @@ trait HasPhoneNumber
         // Remove all non-numeric characters except + in a single pass
         $cleaned = preg_replace('/[^\d+]/', '', (string) $phone);
 
-        if ($cleaned === '' || $cleaned === false) {
+        if ($cleaned === '' || $cleaned === null) {
             return '';
         }
 
