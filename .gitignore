@@ -36,3 +36,4 @@ testbench.yaml
 # Test and benchmark files (for development only)
 test_optimizations.php
 benchmark.php
+OPTIMIZATIONS.md
