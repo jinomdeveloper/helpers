@@ -145,7 +145,7 @@ trait HasCurrency
             $remainder = fmod($amount, 1000000000);
             $billions = $amount / 1000000000;
 
-            return $remainder === 0.0
+            return $remainder < 0.01 && $remainder > -0.01
                 ? self::_terbilang($billions).' Miliar'
                 : self::_terbilang($billions).' Miliar '.self::_terbilang($remainder);
         }
@@ -154,7 +154,7 @@ trait HasCurrency
             $remainder = fmod($amount, 1000000000000);
             $trillions = $amount / 1000000000000;
 
-            return $remainder === 0.0
+            return $remainder < 0.01 && $remainder > -0.01
                 ? self::_terbilang($trillions).' Triliun'
                 : self::_terbilang($trillions).' Triliun '.self::_terbilang($remainder);
         }
