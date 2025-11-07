@@ -16,13 +16,6 @@ namespace Jinom\Helpers\Services;
 class TaxService
 {
     /**
-     * Whether the total amount includes tax.
-     *
-     * @var bool
-     */
-    protected $includedTax;
-
-    /**
      * The tax rate percentage (Indonesian PPN).
      *
      * @var float
@@ -55,19 +48,17 @@ class TaxService
      *
      * @param  float|int  $total  The total amount to calculate tax for
      * @param  bool  $includedTax  Whether the total already includes tax
-     *
-     * @throws \InvalidArgumentException If total is negative
      */
-    public function __construct(float|int $total, $includedTax = true)
+    public function __construct(float|int $total, bool $includedTax = true)
     {
         if ($includedTax) {
             $this->taxedPrice = (float) $total;
-            $this->basePrice = (float) $this->getOriginalPriceFromInclusive($total, $this->taxRate);
+            $this->basePrice = $this->getOriginalPriceFromInclusive($total);
             $this->tax = $this->taxedPrice - $this->basePrice;
         } else {
             $this->basePrice = (float) $total;
-            $this->tax = (float) $this->calculateTax($total, $this->taxRate);
-            $this->taxedPrice = (float) $this->basePrice + $this->tax;
+            $this->tax = $this->calculateTax($total);
+            $this->taxedPrice = $this->basePrice + $this->tax;
         }
     }
 
@@ -78,15 +69,14 @@ class TaxService
      * to get the final price including tax.
      *
      * @param  float  $totalPrice  The base price before tax
-     * @param  float  $taxRate  Tax rate as percentage (e.g. 11 for 11%)
      * @return float The calculated tax amount (rounded to nearest integer)
      *
      * @example
-     * calculateTax(100000, 11); // Returns 11000
+     * calculateTax(100000); // Returns 11000
      */
-    public function calculateTax(float $totalPrice, float $taxRate): float
+    public function calculateTax(float $totalPrice): float
     {
-        return round($totalPrice * ($taxRate / 100));
+        return round($totalPrice * ($this->taxRate / 100));
     }
 
     /**
@@ -97,18 +87,15 @@ class TaxService
      * the original price before tax was added.
      *
      * @param  float  $totalPrice  Total price that includes tax
-     * @param  float  $taxRate  Tax rate as percentage (e.g. 11 for 11%)
      * @return float The original price before tax was applied (rounded to nearest integer)
      *
      * @example
-     * getOriginalPriceFromInclusive(111000, 11); // Returns 100000
+     * getOriginalPriceFromInclusive(111000); // Returns 100000
      *
      * Formula: originalPrice = totalPrice / (1 + (taxRate / 100))
      */
-    public function getOriginalPriceFromInclusive(float $totalPrice, float $taxRate): float
+    public function getOriginalPriceFromInclusive(float $totalPrice): float
     {
-        $originalPrice = $totalPrice / (1 + ($taxRate / 100));
-
-        return round($originalPrice);
+        return round($totalPrice / (1 + ($this->taxRate / 100)));
     }
 }
